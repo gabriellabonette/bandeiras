@@ -1,0 +1,59 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f0f0f0;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+#nome-input {
+  margin: 10px 0;
+  padding: 8px;
+  font-size: 16px;
+}
+
+#jogador {
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+#tabuleiro {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.carta {
+  width: 100px;
+  height: 100px;
+  font-size: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s;
+}
+
+.carta:hover {
+  transform: scale(1.05);
+}
+
+#resultado {
+  margin-top: 20px;
+  font-size: 20px;
+  height: 24px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
