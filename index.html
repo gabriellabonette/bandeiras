@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jogo da Memória - Bandeiras</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+
+  h1 {
+    margin-top: 20px;
+  }
+
+  #nome-input {
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  #jogador {
+    margin: 10px 0;
+    font-weight: bold;
+  }
+
+  #tabuleiro {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .carta {
+    width: 100px;
+    height: 100px;
+    font-size: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+  }
+
+  .carta:hover {
+    transform: scale(1.05);
+  }
+
+  #resultado {
+    margin-top: 20px;
+    font-size: 20px;
+    height: 24px;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+
+<h1>Jogo da Memória - Bandeiras</h1>
+
+<label for="nome-input">Digite seu nome:</label>
+<br>
+<input type="text" id="nome-input" placeholder="Gabriella" />
+<br>
+<div id="jogador"></div>
+
+<div id="tabuleiro"></div>
+
+<div id="resultado"></div>
+
+<button id="reiniciar">Reiniciar Jogo</button>
+
+<script>
+  const bandeiras = ['🇧🇷', '🇺🇸', '🇫🇷', '🇯🇵', '🇧🇪', '🇨🇦', '🇦🇺', '🇮🇹', '🇲🇽'];
+
+  let cartas = [];
+  let primeiraCarta = null;
+  let segundaCarta = null;
+  let lockBoard = false;
+  let paresEncontrados = 0;
+
+  const tabuleiro = document.getElementById('tabuleiro');
+  const resultado = document.getElementById('resultado');
+  const nomeInput = document.getElementById('nome-input');
+  const jogadorDiv = document.getElementById('jogador');
+  const reiniciarBtn = document.getElementById('reiniciar');
+
+  // Função para embaralhar o array
+  function embaralhar(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Função para criar o jogo
+  function iniciarJogo() {
+    // Limpa o tabuleiro e variáveis
+    tabuleiro.innerHTML = '';
+    resultado.innerHTML = '';
+    paresEncontrados = 0;
+    primeiraCarta = null;
+    segundaCarta = null;
+    lockBoard = false;
+
+    // Cria o array de cartas (cada bandeira aparece duas vezes)
+    cartas = [...bandeiras, ...bandeiras];
+    embaralhar(cartas);
+
+    // Cria os elementos das cartas
+    cartas.forEach((emoji, index) => {
+      const carta = document.createElement('div');
+      carta.className = 'carta';
+      carta.dataset.emoji = emoji;
+      carta.dataset.index = index;
+      carta.innerHTML = ''; // inicialmente vazio
+      carta.addEventListener('click', virarCarta);
+      tabuleiro.appendChild(carta);
+    });
+  }
+
+  // Função para virar a carta
+  function virarCarta(e) {
+    if (lockBoard) return;
+
+    const carta = e.currentTarget;
+
+    // Se a carta já estiver virada ou já foi combinada, ignore
+    if (carta.innerHTML !== '') return;
+
+    // Mostra o emoji
+    carta.innerHTML = carta.dataset.emoji;
+
+    if (!primeiraCarta) {
+      primeiraCarta = carta;
+      return;
+    }
+
+    segundaCarta = carta;
+
+    // Verifica se as duas cartas são iguais
+    if (primeiraCarta.dataset.emoji === segundaCarta.dataset.emoji) {
+      // Encontrou um par
+      paresEncontrados++;
+      resultado.innerHTML = `Par encontrado! (${paresEncontrados}/9)`;
+      primeiraCarta = null;
+      segundaCarta = null;
+
+      if (paresEncontrados === bandeiras.length) {
+        resultado.innerHTML = `Parabéns, ${jogadorDiv.innerText}! Você ganhou!`;
+      }
+    } else {
+      // Não é o mesmo par, espera um pouco e vira as cartas de volta
+      lockBoard = true;
+      setTimeout(() => {
+        primeiraCarta.innerHTML = '';
+        segundaCarta.innerHTML = '';
+        primeiraCarta = null;
+        segundaCarta = null;
+        lockBoard = false;
+      }, 1000);
+    }
+  }
+
+  // Atualiza o nome do jogador
+  document.getElementById('nome-input').addEventListener('input', () => {
+    const nome = document.getElementById('nome-input').value.trim();
+    jogadorDiv.innerText = nome ? nome : '';
+  });
+
+  // Inicia o jogo ao carregar
+  window.onload = () => {
+    iniciarJogo();
+  };
+
+  // Reiniciar o jogo ao clicar no botão
+  reiniciarBtn.addEventListener('click', () => {
+    iniciarJogo();
+    // Atualiza o nome se houver
+    const nome = document.getElementById('nome-input').value.trim();
+    jogadorDiv.innerText = nome ? nome : '';
+  });
+</script>
+
+</body>
+</html>
